@@ -8,7 +8,6 @@ from sqlalchemy import create_engine, Column, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Pārbaudām datubāzes adresi
 DATABASE_URL = os.getenv("DATABASE_URL")
 print(f"DEBUG: DATABASE_URL vērtība ir -> {DATABASE_URL}")
 
