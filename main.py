@@ -25,8 +25,7 @@ class BatteryModel(Base):
     manufacturing_date = Column(String, default="2026-01-01")
     status = Column(String, default="Active")
 
-# 3. Pārbūvējam tabulu un pārliecināmies, ka kolonna eksistē
-Base.metadata.drop_all(bind=engine)
+# 3. Tikai izveidojam tabulu, ja tās nav (bez dzēšanas!)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Battery DPP API")
