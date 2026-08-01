@@ -1,4 +1,5 @@
-# Atjaunināts 2026 import os
+# Atjaunināts 2026
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import Response
 import qrcode
