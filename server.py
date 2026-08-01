@@ -74,3 +74,25 @@ def get_battery(battery_id: str):
         }
     finally:
         db.close()
+@app.get("/battery/{battery_id}/qrcode")
+def generate_qr_code(battery_id: str):
+    db = SessionLocal()
+    try:
+        # Pārbaudām, vai baterija eksistē
+        battery = db.query(BatteryModel).filter(BatteryModel.battery_id == battery_id).first()
+        if not battery:
+            raise HTTPException(status_code=404, detail="Battery not found")
+        
+        # Saiti, uz kuru vedīs QR kods (piemēram, tava API adrese)
+        # Kad lietotājs noskannēs kodu, viņš ieraudzīs šīs baterijas datus
+        data_url = f"https://tavs-railway-serviss.up.railway.app/battery/{battery_id}"
+        
+        # Ģenerējam QR kodu
+        img = qrcode.make(data_url)
+        img_io = io.BytesIO()
+        img.save(img_io, 'PNG')
+        img_io.seek(0)
+        
+        return Response(content=img_io.getvalue(), media_type="image/png")
+    finally:
+        db.close()
