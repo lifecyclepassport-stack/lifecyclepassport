@@ -18,7 +18,13 @@ import io
 from sqlalchemy import create_engine, Column, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
 
+# Iekopē šīs divas rindas šeit:
+Base.metadata.drop_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
