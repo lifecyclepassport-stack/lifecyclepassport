@@ -1,5 +1,5 @@
 fastapi
 uvicorn
-qrcode[pil]
-psycopg2-binary
 sqlalchemy
+qrcode
+pydantic
