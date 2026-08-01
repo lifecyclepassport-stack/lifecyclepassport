@@ -1,4 +1,19 @@
-from sqlalchemy import create_engine, text
+import os
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+# 1. VISPIRMS iegūstam datubāzes adresi no Railway vides mainīgajiem
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# 2. TIKAI TAD izveidojam engine un bāzi
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+# 3. Izdzēšam un izveidojam tabulu no jauna, lai parādītos visas kolonnas
+Base.metadata.drop_all(bind=engine)
+Base.metadata.create_all(bind=engine)from sqlalchemy import create_engine, text
 # ... tavs esošais kods un imports ...
 
 # Pievieno šo savam esošajam kodam, neko citu neizdzēšot:
