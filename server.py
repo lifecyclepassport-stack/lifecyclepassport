@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import Response
+from fastapi.responses import HTMLResponse, Response
 import qrcode
 import io
 from sqlalchemy import create_engine, Column, String, Float
@@ -75,6 +75,7 @@ def get_battery(battery_id: str):
     finally:
         db.close()
 
+# 3. Sadaļa: Tīrs QR koda attēls (fails)
 @app.get("/battery/{battery_id}/qrcode")
 def generate_qr_code(battery_id: str):
     db = SessionLocal()
@@ -83,7 +84,6 @@ def generate_qr_code(battery_id: str):
         if not battery:
             raise HTTPException(status_code=404, detail="Battery not found")
         
-        # Tava reālā Railway saite:
         data_url = f"https://battery-dpp-api-production-a9d8.up.railway.app/battery/{battery_id}"
         
         img = qrcode.make(data_url)
@@ -92,5 +92,54 @@ def generate_qr_code(battery_id: str):
         img_io.seek(0)
         
         return Response(content=img_io.getvalue(), media_type="image/png")
+    finally:
+        db.close()
+
+# 4. Sadaļa: Vizuāla HTML lapa, kurā redzams QR kods un var ērti noskenēt
+@app.get("/battery/{battery_id}/scan", response_class=HTMLResponse)
+def scan_page(battery_id: str):
+    db = SessionLocal()
+    try:
+        battery = db.query(BatteryModel).filter(BatteryModel.battery_id == battery_id).first()
+        if not battery:
+            raise HTTPException(status_code=404, detail="Battery not found")
+        
+        # Izveidojam tiešo saiti uz QR koda attēlu, ko ielikt lapā
+        qr_img_endpoint = f"/battery/{battery_id}/qrcode"
+        json_endpoint = f"/battery/{battery_id}"
+
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Baterijas QR Kods - {battery_id}</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f9; padding: 50px; }}
+                .card {{ background: white; padding: 30px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); display: inline-block; }}
+                h2 {{ color: #333; }}
+                p {{ color: #666; }}
+                img {{ margin: 20px 0; border: 1px solid #ddd; padding: 10px; border-radius: 5px; }}
+                .btn {{ display: inline-block; margin-top: 15px; padding: 10px 20px; background: #007BFF; color: white; text-decoration: none; border-radius: 5px; }}
+                .btn:hover {{ background: #0056b3; }}
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <h2>Baterijas Digitālā Pase (DPP)</h2>
+                <p>Baterijas ID: <strong>{battery_id}</strong></p>
+                <p>Modelis: <strong>{battery.model}</strong> ({battery.manufacturer})</p>
+                
+                <!-- Šeit tiek ielādēts QR kods -->
+                <br>
+                <img src="{qr_img_endpoint}" alt="QR Kods" width="250" height="250">
+                <br>
+                
+                <p>Noskenē šo kodu ar telefonu, lai atvērtu datus!</p>
+                <a class="btn" href="{json_endpoint}" target="_blank">Skatīt JSON datus</a>
+            </div>
+        </body>
+        </html>
+        """
+        return html_content
     finally:
         db.close()
