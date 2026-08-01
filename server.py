@@ -7,10 +7,10 @@ from sqlalchemy import create_engine, Column, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Drošs URL, kas nekad neizraisīs NameError kļūdu
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
-
+# 1. Definējam datubāzes URL un dzinēju
 DATABASE_URL = "sqlite:///./batteries.db"
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
