@@ -3,17 +3,19 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import Response
 import qrcode
 import io
-from sqlalchemy import create_engine, Column, String, Float, text
+from sqlalchemy import create_engine, Column, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# 1. Datubāzes savienojums
+# 1. VISPIRMS definējam datubāzes adresi
 DATABASE_URL = os.getenv("DATABASE_URL")
+
+# 2. TIKAI TAD veidojam engine un bāzi
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# 2. Tabulas modelis
+# 3. Tabulas modelis
 class BatteryModel(Base):
     __tablename__ = "batteries"
     
@@ -25,7 +27,7 @@ class BatteryModel(Base):
     manufacturing_date = Column(String, default="2026-01-01")
     status = Column(String, default="Active")
 
-# 3. Tikai izveidojam tabulu, ja tās nav (bez dzēšanas!)
+# Izveidojam tabulu, ja tās nav
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Battery DPP API")
