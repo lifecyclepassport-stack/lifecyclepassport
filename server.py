@@ -127,7 +127,16 @@ def scan_page(battery_id: str):
                 <h2>Baterijas Digitālā Pase (DPP)</h2>
                 <p>Baterijas ID: <strong>{battery_id}</strong></p>
                 <p>Modelis: <strong>{battery.model}</strong> ({battery.manufacturer})</p>
-                
+                <p>Noskenē šo kodu ar telefonu, lai atvērtu datus!</p>
+                <a class="btn" href="{json_endpoint}" target="_blank">Skatīt JSON datus</a>
+            </div>
+        </body>
+        </html>
+        
+        """
+        return html_content
+    finally:
+        db.close()
                 <!-- Šeit tiek ielādēts QR kods -->
                 <br>
                 <img src="{qr_img_endpoint}" alt="QR Kods" width="250" height="250">
