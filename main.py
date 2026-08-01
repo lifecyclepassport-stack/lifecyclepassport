@@ -1,51 +1,19 @@
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-
-# 1. VISPIRMS iegūstam datubāzes adresi no Railway vides mainīgajiem
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-# 2. TIKAI TAD izveidojam engine un bāzi
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
-
-# 3. Izdzēšam un izveidojam tabulu no jauna, lai parādītos visas kolonnas
-Base.metadata.drop_all(bind=engine)
-Base.metadata.create_all(bind=engine)from sqlalchemy import create_engine, text
-# ... tavs esošais kods un imports ...
-
-# Pievieno šo savam esošajam kodam, neko citu neizdzēšot:
-try:
-    with engine.connect() as connection:
-        connection.execute(text("ALTER TABLE batteries ADD COLUMN IF NOT EXISTS manufacturing_date VARCHAR(255);"))
-        connection.commit()
-    print("Datubāzes kolonna manufacturing_date veiksmīgi pārbaudīta/pievienota!")
-except Exception as e:
-    print("Kļūda, pievienojot kolonnu:", e)
-
-# ... turpinās tavs pārējais kods ...import os
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import Response
 import qrcode
 import io
-from sqlalchemy import create_engine, Column, String, Float
+from sqlalchemy import create_engine, Column, String, Float, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
 
-# Iekopē šīs divas rindas šeit:
-Base.metadata.drop_all(bind=engine)
-Base.metadata.create_all(bind=engine)
+# 1. Datubāzes savienojums
 DATABASE_URL = os.getenv("DATABASE_URL")
-
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+# 2. Tabulas modelis
 class BatteryModel(Base):
     __tablename__ = "batteries"
     
@@ -57,20 +25,9 @@ class BatteryModel(Base):
     manufacturing_date = Column(String, default="2026-01-01")
     status = Column(String, default="Active")
 
+# 3. Pārbūvējam tabulu un pārliecināmies, ka kolonna eksistē
 Base.metadata.drop_all(bind=engine)
-from sqlalchemy import text
-
-# Pievieno šo uzreiz pēc tam, kad esi izveidojis engine un Base:
 Base.metadata.create_all(bind=engine)
-
-# Automātiski pievieno trūkstošo kolonnu, ja tās nav:
-try:
-    with engine.connect() as connection:
-        connection.execute(text("ALTER TABLE batteries ADD COLUMN IF NOT EXISTS manufacturing_date VARCHAR(255);"))
-        connection.commit()
-    print("Kolonna manufacturing_date pārbaudīta!")
-except Exception as e:
-    print("Kolonnas paziņojums:", e)
 
 app = FastAPI(title="Battery DPP API")
 
