@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 # Drošs URL, kas nekad neizraisīs NameError kļūdu
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
 
-engine = create_engine(DATABASE_URL)
+DATABASE_URL = "sqlite:///./batteries.db"
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
