@@ -8,15 +8,17 @@ from sqlalchemy import create_engine, Column, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# 1. VISPIRMS definējam datubāzes adresi
+# Pārbaudām datubāzes adresi
 DATABASE_URL = os.getenv("DATABASE_URL")
+print(f"DEBUG: DATABASE_URL vērtība ir -> {DATABASE_URL}")
 
-# 2. TIKAI TAD veidojam engine un bāzi
+if not DATABASE_URL:
+    raise RuntimeError("KRITISKA KĻŪDA: Railway panelī nav atrasts mainīgais DATABASE_URL!")
+
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# 3. Tabulas modelis
 class BatteryModel(Base):
     __tablename__ = "batteries"
     
@@ -28,7 +30,6 @@ class BatteryModel(Base):
     manufacturing_date = Column(String, default="2026-01-01")
     status = Column(String, default="Active")
 
-# Izveidojam tabulu, ja tās nav
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Battery DPP API")
