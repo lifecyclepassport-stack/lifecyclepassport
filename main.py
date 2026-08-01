@@ -1,4 +1,16 @@
-import os
+from sqlalchemy import create_engine, text
+# ... tavs esošais kods un imports ...
+
+# Pievieno šo savam esošajam kodam, neko citu neizdzēšot:
+try:
+    with engine.connect() as connection:
+        connection.execute(text("ALTER TABLE batteries ADD COLUMN IF NOT EXISTS manufacturing_date VARCHAR(255);"))
+        connection.commit()
+    print("Datubāzes kolonna manufacturing_date veiksmīgi pārbaudīta/pievienota!")
+except Exception as e:
+    print("Kļūda, pievienojot kolonnu:", e)
+
+# ... turpinās tavs pārējais kods ...import os
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import Response
 import qrcode
