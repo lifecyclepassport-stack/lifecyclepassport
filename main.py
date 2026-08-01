@@ -21,8 +21,9 @@ class BatteryModel(Base):
     manufacturer = Column(String)
     chemistry = Column(String)
     carbon_footprint = Column(Float)
+    manufacturing_date = Column(String, default="2026-01-01")
+    status = Column(String, default="Active")
 
-# Droši izveido tabulu, ja tādas vēl nav
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Battery DPP API")
@@ -32,7 +33,7 @@ def read_root():
     return {"message": "Bateriju DPP datubāzes sistēma darbojas!"}
 
 @app.post("/battery/add")
-def add_battery(battery_id: str, model: str, manufacturer: str, chemistry: str, carbon_footprint: float):
+def add_battery(battery_id: str, model: str, manufacturer: str, chemistry: str, carbon_footprint: float, manufacturing_date: str = "2026-01-01", status: str = "Active"):
     db = SessionLocal()
     try:
         existing = db.query(BatteryModel).filter(BatteryModel.battery_id == battery_id).first()
@@ -44,7 +45,9 @@ def add_battery(battery_id: str, model: str, manufacturer: str, chemistry: str, 
             model=model,
             manufacturer=manufacturer,
             chemistry=chemistry,
-            carbon_footprint=carbon_footprint
+            carbon_footprint=carbon_footprint,
+            manufacturing_date=manufacturing_date,
+            status=status
         )
         db.add(new_battery)
         db.commit()
@@ -64,7 +67,9 @@ def get_battery(battery_id: str):
             "model": battery.model,
             "manufacturer": battery.manufacturer,
             "chemistry": battery.chemistry,
-            "carbon_footprint": battery.carbon_footprint
+            "carbon_footprint": battery.carbon_footprint,
+            "manufacturing_date": battery.manufacturing_date,
+            "status": battery.status
         }
     finally:
         db.close()
