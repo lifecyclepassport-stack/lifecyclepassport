@@ -36,6 +36,7 @@ class BatteryModel(Base):
     manufacturing_date = Column(String, default="2026-01-01")
     status = Column(String, default="Active")
 
+Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Battery DPP API")
