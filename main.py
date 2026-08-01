@@ -37,7 +37,19 @@ class BatteryModel(Base):
     status = Column(String, default="Active")
 
 Base.metadata.drop_all(bind=engine)
+from sqlalchemy import text
+
+# Pievieno šo uzreiz pēc tam, kad esi izveidojis engine un Base:
 Base.metadata.create_all(bind=engine)
+
+# Automātiski pievieno trūkstošo kolonnu, ja tās nav:
+try:
+    with engine.connect() as connection:
+        connection.execute(text("ALTER TABLE batteries ADD COLUMN IF NOT EXISTS manufacturing_date VARCHAR(255);"))
+        connection.commit()
+    print("Kolonna manufacturing_date pārbaudīta!")
+except Exception as e:
+    print("Kolonnas paziņojums:", e)
 
 app = FastAPI(title="Battery DPP API")
 
