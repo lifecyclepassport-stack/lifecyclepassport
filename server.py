@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, Column, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# 1. Definējam datubāzes URL un dzinēju
+# 1. Drošs lokālās datubāzes dzinējs
 DATABASE_URL = "sqlite:///./batteries.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 
