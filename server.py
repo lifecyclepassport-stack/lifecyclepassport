@@ -139,6 +139,7 @@ def scan_page(battery_id: str):
             </div>
         </body>
         </html>
+        
         """
         return html_content
     finally:
