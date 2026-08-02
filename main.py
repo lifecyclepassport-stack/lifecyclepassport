@@ -138,5 +138,3 @@ def scan_page(battery_id: str):
         return html_content
     finally:
         db.close()
-@app.get("/battery/{battery_id}/scan", response_class=HTMLResponse)
-def scan_page(battery_id: str):
