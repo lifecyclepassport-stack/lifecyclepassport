@@ -142,3 +142,4 @@ def scan_page(battery_id: str):
                 <br>
                 <img src="{qr_img_endpoint}" alt="QR Kods" width="250" height="250">
                 <br>
+generate-qr
