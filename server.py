@@ -138,6 +138,7 @@ def scan_page(battery_id: str):
     finally:
         db.close()
                 <!-- Šeit tiek ielādēts QR kods -->
+                
                 <br>
                 <img src="{qr_img_endpoint}" alt="QR Kods" width="250" height="250">
                 <br>
